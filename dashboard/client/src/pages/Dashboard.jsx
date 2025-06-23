@@ -123,12 +123,14 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br">
-      {/* Header */}
       <header className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center space-x-4">
             <div className="p-2 bg-blue-600 rounded-xl">
-              <FaArrowLeft onClick={() => navigate("/")} className="w-6 h-6 text-white" />
+              <FaArrowLeft
+                onClick={() => navigate("/")}
+                className="w-6 h-6 text-white"
+              />
             </div>
             <div>
               <h1 className="text-2xl font-bold text-gray-900">
@@ -143,7 +145,6 @@ const Dashboard = () => {
       </header>
 
       <main className="max-w-7xl mx-auto px-6 py-8">
-        {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <StatCard
             title="Total Jobs"
@@ -175,9 +176,7 @@ const Dashboard = () => {
           />
         </div>
 
-        {/* Charts */}
         <div className="space-y-8">
-          {/* Weekly Performance Chart */}
           <div className="bg-white rounded-2xl border border-gray-200 p-8 hover:shadow-md transition-shadow duration-300">
             <div className="flex items-center justify-between mb-6">
               <div>
@@ -233,7 +232,6 @@ const Dashboard = () => {
             </ResponsiveContainer>
           </div>
 
-          {/* Scatter Plot */}
           <div className="bg-white rounded-2xl border border-gray-200 p-8 hover:shadow-md transition-shadow duration-300">
             <div className="flex items-center justify-between mb-6">
               <div>

@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const csv = require("csv-parser");
 const fs = require("fs");
@@ -11,7 +12,6 @@ app.use(cors());
 
 app.get("/api/data", (req, res) => {
   const results = [];
-  // Correctly path to the CSV file from the root of the project
   const csvFilePath = path.join(__dirname, "../../dashboard_data.csv");
 
   fs.createReadStream(csvFilePath)
