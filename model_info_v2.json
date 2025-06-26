@@ -1,0 +1,1 @@
+{"features": ["Build Pull Request", "start_hour_of_day", "start_day_of_week"], "target": "Test Suite Duration Log", "categorical_features": [], "model_version": "v2", "performance": {"mae": 12.68324529922782, "r2": -0.00856239794645175}}
