@@ -1,7 +1,16 @@
 import axios from "axios";
-import { AlertCircle, CheckCircle, Clock, TrendingUp } from "lucide-react";
+import { AlertCircle, CheckCircle, Clock } from "lucide-react";
 import React, { useState } from "react";
 
+import {
+  Brain,
+  CalendarDays,
+  GitBranch,
+  Sparkles,
+  Target,
+  Timer,
+  Zap,
+} from "lucide-react";
 const PredictionForm = () => {
   const [formData, setFormData] = useState({
     is_pull_request: false,
@@ -40,144 +49,201 @@ const PredictionForm = () => {
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-200 p-8 hover:shadow-md transition-shadow duration-300">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-900">
-            Pipeline Duration Predictor
-          </h2>
-          <p className="text-gray-600 mt-1">
-            Get ML-powered predictions for your CI/CD pipeline execution time
-          </p>
-        </div>
-        <div className="p-3 bg-green-50 rounded-lg">
-          <TrendingUp className="w-6 h-6 text-green-600" />
-        </div>
-      </div>
+    <div className="relative overflow-hidden bg-white/90 backdrop-blur-lg rounded-3xl border border-white/50 p-8 shadow-lg">
+      {/* Background Pattern */}
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 via-indigo-50/30 to-purple-50/50"></div>
+      <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-blue-200/20 to-transparent rounded-full blur-3xl"></div>
+      <div className="absolute bottom-0 left-0 w-48 h-48 bg-gradient-to-tr from-indigo-200/20 to-transparent rounded-full blur-2xl"></div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Start Time
-            </label>
-            <input
-              type="datetime-local"
-              name="start_time"
-              value={formData.start_time}
-              onChange={handleInputChange}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
+      <div className="relative z-10">
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center space-x-4">
+            <div className="p-4 bg-gradient-to-br from-blue-500 to-blue-700 rounded-2xl shadow-lg">
+              <Brain className="w-8 h-8 text-white" />
+            </div>
+            <div>
+              <h2 className="text-3xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-indigo-800 bg-clip-text text-transparent">
+                Pipeline Predictor
+              </h2>
+              <p className="text-gray-600 mt-1 font-medium">
+                Get instant ML-powered predictions for your CI/CD pipeline
+                execution time
+              </p>
+            </div>
           </div>
+          
+        </div>
 
-          <div className="flex items-center justify-center">
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                name="is_pull_request"
-                checked={formData.is_pull_request}
-                onChange={handleInputChange}
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-              />
-              <label className="ml-2 block text-sm text-gray-700">
-                This is a Pull Request build
+        <form onSubmit={handleSubmit} className="space-y-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="space-y-2">
+              <label className="flex items-center space-x-2 text-sm font-semibold text-gray-700 mb-3">
+                <CalendarDays className="w-4 h-4 text-blue-600" />
+                <span>Pipeline Start Time</span>
               </label>
+              <input
+                type="datetime-local"
+                name="start_time"
+                value={formData.start_time}
+                onChange={handleInputChange}
+                className="w-full px-5 py-4 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-300 bg-white/80 backdrop-blur-sm text-gray-900 font-medium"
+              />
             </div>
-          </div>
-        </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
-        >
-          {loading ? "Getting Prediction..." : "Predict Duration"}
-        </button>
-      </form>
-
-      {/* Prediction Result */}
-      {prediction && (
-        <div className="mt-8 p-6 bg-green-50 border border-green-200 rounded-lg">
-          <div className="flex items-center mb-4">
-            <CheckCircle className="w-6 h-6 text-green-600 mr-2" />
-            <h3 className="text-lg font-semibold text-green-800">
-              Prediction Result
-            </h3>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="bg-white p-4 rounded-lg border border-green-200">
-              <div className="flex items-center mb-2">
-                <Clock className="w-5 h-5 text-green-600 mr-2" />
-                <span className="text-sm font-medium text-gray-600">
-                  Duration
-                </span>
+            <div className="flex items-center justify-center">
+              <div className="flex items-center space-x-3 p-4 bg-white/60 rounded-2xl border-2 border-gray-200 hover:border-blue-300 transition-all duration-300">
+                <GitBranch className="w-5 h-5 text-indigo-600" />
+                <input
+                  type="checkbox"
+                  name="is_pull_request"
+                  checked={formData.is_pull_request}
+                  onChange={handleInputChange}
+                  className="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded-lg"
+                />
+                <label className="text-sm font-semibold text-gray-700">
+                  Pull Request Build
+                </label>
               </div>
-              <p className="text-2xl font-bold text-green-700">
-                {prediction.prediction_minutes.toFixed(1)} minutes
-              </p>
-              <p className="text-sm text-gray-500">
-                ({prediction.prediction_seconds.toFixed(0)} seconds)
-              </p>
-            </div>
-
-            <div className="bg-white p-4 rounded-lg border border-green-200">
-              <div className="flex items-center mb-2">
-                <TrendingUp className="w-5 h-5 text-blue-600 mr-2" />
-                <span className="text-sm font-medium text-gray-600">
-                  Confidence
-                </span>
-              </div>
-              <p className="text-2xl font-bold text-blue-700 capitalize">
-                {prediction.confidence}
-              </p>
-              <p className="text-sm text-gray-500">Model confidence</p>
             </div>
           </div>
 
-          <div className="mt-4 p-4 bg-white rounded-lg border border-green-200">
-            <h4 className="text-sm font-medium text-gray-700 mb-2">
-              Input Features:
-            </h4>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm">
-              <div>
-                <span className="text-gray-500">Pull Request:</span>
-                <span className="ml-1 font-medium">
-                  {prediction.input_features["Build Pull Request"]
-                    ? "Yes"
-                    : "No"}
-                </span>
+          <button
+            type="submit"
+            disabled={loading}
+            className="group relative w-full bg-gradient-to-r from-blue-600 to-blue-800 text-white py-4 px-8 rounded-2xl font-bold text-lg hover:from-blue-700 hover:to-blue-800 focus:ring-4 focus:ring-blue-500/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-[1.02] transform"
+          >
+            <div className="flex items-center justify-center space-x-3">
+              {loading ? (
+                <>
+                  <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  <span>Analyzing Pipeline...</span>
+                </>
+              ) : (
+                <>
+                  <Zap className="w-6 h-6" />
+                  <span>Predict Duration</span>
+                </>
+              )}
+            </div>
+          </button>
+        </form>
+
+        {/* Enhanced Prediction Result */}
+        {prediction && (
+          <div className="mt-8 p-8 bg-gradient-to-r from-green-50 via-emerald-50 to-green-50 border-2 border-green-200 rounded-3xl shadow-lg">
+            <div className="flex items-center mb-6">
+              <div className="p-3 bg-green-500 rounded-2xl mr-4">
+                <CheckCircle className="w-7 h-7 text-white" />
               </div>
               <div>
-                <span className="text-gray-500">Hour:</span>
-                <span className="ml-1 font-medium">
-                  {prediction.input_features["start_hour_of_day"]}:00
-                </span>
+                <h3 className="text-2xl font-bold text-green-800">
+                  Prediction Complete
+                </h3>
+                <p className="text-green-600 font-medium">
+                  AI analysis successful
+                </p>
               </div>
-              <div>
-                <span className="text-gray-500">Day:</span>
-                <span className="ml-1 font-medium">
-                  {
-                    ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][
-                      prediction.input_features["start_day_of_week"]
-                    ]
-                  }
-                </span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+              <div className="bg-white/80 backdrop-blur-sm p-6 rounded-2xl border border-green-200 hover:shadow-lg transition-all duration-300">
+                <div className="flex items-center mb-3">
+                  <Timer className="w-6 h-6 text-green-600 mr-3" />
+                  <span className="text-sm font-bold text-gray-600 uppercase tracking-wide">
+                    Predicted Duration
+                  </span>
+                </div>
+                <p className="text-4xl font-bold text-green-700 mb-2">
+                  {prediction.prediction_minutes.toFixed(1)} min
+                </p>
+                <p className="text-lg text-gray-600 font-medium">
+                  ({prediction.prediction_seconds.toFixed(0)} seconds)
+                </p>
+              </div>
+
+              <div className="bg-white/80 backdrop-blur-sm p-6 rounded-2xl border border-blue-200 hover:shadow-lg transition-all duration-300">
+                <div className="flex items-center mb-3">
+                  <Target className="w-6 h-6 text-blue-600 mr-3" />
+                  <span className="text-sm font-bold text-gray-600 uppercase tracking-wide">
+                    Confidence Level
+                  </span>
+                </div>
+                <p className="text-4xl font-bold text-blue-700 mb-2 capitalize">
+                  {prediction.confidence}
+                </p>
+                <p className="text-lg text-gray-600 font-medium">
+                  Model precision
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-white/60 backdrop-blur-sm p-6 rounded-2xl border border-gray-200">
+              <h4 className="text-lg font-bold text-gray-800 mb-4 flex items-center">
+                <Brain className="w-5 h-5 mr-2 text-indigo-600" />
+                Analysis Parameters
+              </h4>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="flex items-center space-x-3 p-3 bg-white/80 rounded-xl">
+                  <GitBranch className="w-5 h-5 text-indigo-600" />
+                  <div>
+                    <span className="text-sm text-gray-500">Build Type:</span>
+                    <span className="ml-2 font-bold text-gray-800">
+                      {prediction.input_features["Build Pull Request"]
+                        ? "Pull Request"
+                        : "Regular"}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-3 p-3 bg-white/80 rounded-xl">
+                  <Clock className="w-5 h-5 text-orange-600" />
+                  <div>
+                    <span className="text-sm text-gray-500">Time:</span>
+                    <span className="ml-2 font-bold text-gray-800">
+                      {prediction.input_features["start_hour_of_day"]}:00
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-3 p-3 bg-white/80 rounded-xl">
+                  <CalendarDays className="w-5 h-5 text-purple-600" />
+                  <div>
+                    <span className="text-sm text-gray-500">Day:</span>
+                    <span className="ml-2 font-bold text-gray-800">
+                      {
+                        [
+                          "Monday",
+                          "Tuesday",
+                          "Wednesday",
+                          "Thursday",
+                          "Friday",
+                          "Saturday",
+                          "Sunday",
+                        ][prediction.input_features["start_day_of_week"]]
+                      }
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Error Message */}
-      {error && (
-        <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-          <div className="flex items-center">
-            <AlertCircle className="w-5 h-5 text-red-600 mr-2" />
-            <span className="text-red-800 font-medium">Error: {error}</span>
+        {/* Enhanced Error Message */}
+        {error && (
+          <div className="mt-8 p-6 bg-gradient-to-r from-red-50 to-pink-50 border-2 border-red-200 rounded-2xl shadow-lg">
+            <div className="flex items-center">
+              <div className="p-2 bg-red-500 rounded-xl mr-4">
+                <AlertCircle className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <span className="text-red-800 font-bold text-lg">
+                  Prediction Failed
+                </span>
+                <p className="text-red-600 font-medium">{error}</p>
+              </div>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

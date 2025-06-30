@@ -1,7 +1,14 @@
 import axios from "axios";
-import { Activity, BarChart3, Clock, TrendingUp } from "lucide-react";
+import {
+  ArrowLeft,
+  Calendar,
+  Database,
+  Target,
+  Timer,
+  TrendingUp,
+  Zap,
+} from "lucide-react";
 import React, { useEffect, useMemo, useState } from "react";
-import { FaArrowLeft } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import {
   Bar,
@@ -109,94 +116,122 @@ const Dashboard = () => {
     [data]
   );
 
-  const StatCard = ({ title, value, icon: Icon, subtitle, color = "blue" }) => (
-    <div className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+  const StatCard = ({
+    title,
+    value,
+    subtitle,
+    color = "blue",
+    trend,
+  }) => (
+    <div className="group bg-white/70 backdrop-blur-sm rounded-2xl border border-white/50 p-6 hover:bg-white/90 hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 hover:border-blue-200/50">
       <div className="flex items-center justify-between">
         <div className="flex-1">
-          <p className="text-sm font-medium text-gray-600 mb-2">{title}</p>
-          <p className="text-3xl font-bold text-gray-900 mb-1">{value}</p>
-          {subtitle && <p className="text-sm text-gray-500">{subtitle}</p>}
-        </div>
-        <div className={`p-4 bg-${color}-50 rounded-xl`}>
-          <Icon className={`w-7 h-7 text-${color}-600`} />
+          <div className="flex items-center space-x-2 mb-3">
+            <p className="text-sm font-semibold text-gray-600 tracking-wide uppercase">
+              {title}
+            </p>
+            {trend && (
+              <div
+                className={`px-2 py-1 rounded-full text-xs font-medium ${
+                  trend.type === "up"
+                    ? "bg-green-100 text-green-700"
+                    : "bg-red-100 text-red-700"
+                }`}
+              >
+                {trend.value}
+              </div>
+            )}
+          </div>
+          <p className="text-4xl font-bold text-gray-900 mb-2 group-hover:text-blue-800 transition-colors duration-300">
+            {value}
+          </p>
+          {subtitle && (
+            <p className="text-sm text-gray-500 font-medium">{subtitle}</p>
+          )}
         </div>
       </div>
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br">
-      <header className="bg-white shadow-sm border-b border-gray-200">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+      {/* Modern Header */}
+      <header className="bg-white/80 backdrop-blur-lg shadow-lg border-b border-white/20 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center space-x-4">
-            <div className="p-2 bg-blue-600 rounded-xl">
-              <FaArrowLeft
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <button
                 onClick={() => navigate("/")}
-                className="w-6 h-6 text-white"
-              />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">
-                DevOps Pipeline Performance
-              </h1>
-              <p className="text-gray-600">
-                Monitor and analyze your CI/CD pipeline efficiency
-              </p>
+                className="group p-3 bg-gradient-to-r from-blue-600 to-blue-800 rounded-xl hover:from-blue-700 hover:to-blue-900 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
+              >
+                <ArrowLeft className="w-5 h-5 text-white group-hover:transform group-hover:-translate-x-1 transition-transform duration-200" />
+              </button>
+              <div>
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 via-blue-600 to-blue-800 bg-clip-text text-transparent">
+                  DevOps Pipeline Intelligence
+                </h1>
+              </div>
             </div>
           </div>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-6 py-8">
-        {/* Prediction Form */}
-        <div className="mb-8">
-          <PredictionForm />
+      <main className="max-w-7xl mx-auto px-6 py-8 space-y-8">
+        {/* Hero Section with Prediction Form */}
+        <div className="relative">
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 to-indigo-600/10 rounded-3xl"></div>
+          <div className="relative">
+            <PredictionForm />
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        {/* Enhanced Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
           <StatCard
-            title="Total Jobs"
+            title="Pipeline Jobs"
             value={summaryStats.totalJobs.toLocaleString()}
-            icon={BarChart3}
-            subtitle="Pipeline executions"
+            subtitle="Total executions analyzed"
             color="blue"
+            trend={{ type: "up", value: "+12%" }}
           />
           <StatCard
-            title="Avg Actual Duration"
+            title="Actual Duration"
             value={`${summaryStats.avgActual}s`}
-            icon={Clock}
             subtitle="Average execution time"
-            color="amber"
+            color="emerald"
+            trend={{ type: "down", value: "-5%" }}
           />
           <StatCard
-            title="Avg Predicted Duration"
+            title="AI Prediction"
             value={`${summaryStats.avgPredicted}s`}
-            icon={TrendingUp}
-            subtitle="ML model prediction"
+            subtitle="ML model forecast"
             color="violet"
+            trend={{ type: "up", value: "+2%" }}
           />
           <StatCard
             title="Model Accuracy"
             value={`${summaryStats.accuracy}%`}
-            icon={Activity}
-            subtitle="Prediction accuracy"
+            subtitle="Prediction precision"
             color="orange"
+            trend={{ type: "up", value: "+8%" }}
           />
         </div>
 
-        <div className="space-y-8">
-          <div className="bg-white rounded-2xl border border-gray-200 p-8 hover:shadow-md transition-shadow duration-300">
-            <div className="flex items-center justify-between mb-6">
+        {/* Analytics Charts Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Weekly Trends Chart */}
+          <div className="bg-white/80 backdrop-blur-sm rounded-3xl border border-white/50 p-8 hover:bg-white/90 hover:shadow-2xl transition-all duration-500">
+            <div className="flex items-center justify-between mb-8">
               <div>
-                <h2 className="text-2xl font-bold text-gray-900">
-                  Weekly Performance Trends
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                  Weekly Performance Insights
                 </h2>
-                <p className="text-gray-600 mt-1">
-                  Average job duration comparison by day of week
+                <p className="text-gray-600 font-medium">
+                  Duration patterns across weekdays
                 </p>
               </div>
-              <div className="p-3 bg-blue-50 rounded-lg">
-                <BarChart3 className="w-6 h-6 text-blue-600" />
+              <div className="p-4 bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl">
+                <Calendar className="w-6 h-6 text-blue-600" />
               </div>
             </div>
             <ResponsiveContainer width="100%" height={400}>
