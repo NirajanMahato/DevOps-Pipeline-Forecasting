@@ -1,0 +1,18 @@
+{
+  "features": [
+    "Build Pull Request",
+    "start_hour_of_day",
+    "start_day_of_week",
+    "Test Suite"
+  ],
+  "target": "log_duration_synth",
+  "categorical_features": [
+    "Test Suite"
+  ],
+  "model_version": "enhanced_time_sensitive",
+  "performance": {
+    "mae_seconds": 3.02836588520476,
+    "r2_score": 0.8535212479418819
+  },
+  "description": "LightGBM model with synthetic time effect for predicting CI/CD pipeline durations"
+}

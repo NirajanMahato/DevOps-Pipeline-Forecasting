@@ -67,6 +67,16 @@ app.get("/api/features", async (req, res) => {
   }
 });
 
+app.get("/api/test-suites", async (req, res) => {
+  try {
+    const response = await axios.get(`${FLASK_API_URL}/api/test-suites`);
+    res.json(response.data);
+  } catch (error) {
+    console.error("Error getting test suites:", error.message);
+    res.status(500).json({ error: "Test suites service unavailable" });
+  }
+});
+
 app.get("/api/sample-prediction", async (req, res) => {
   try {
     const response = await axios.get(`${FLASK_API_URL}/api/sample-prediction`);

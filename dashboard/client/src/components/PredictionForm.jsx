@@ -1,25 +1,49 @@
 import axios from "axios";
 import { AlertCircle, CheckCircle, Clock } from "lucide-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import {
   Brain,
   CalendarDays,
   GitBranch,
-  Sparkles,
   Target,
+  TestTube,
   Timer,
   Zap,
 } from "lucide-react";
+
 const PredictionForm = () => {
   const [formData, setFormData] = useState({
     is_pull_request: false,
     start_time: new Date().toISOString().slice(0, 16),
+    test_suite: "test/unit",
   });
 
   const [prediction, setPrediction] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [testSuites, setTestSuites] = useState([]);
+
+  useEffect(() => {
+    const fetchTestSuites = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:5001/api/test-suites"
+        );
+        setTestSuites(response.data.test_suites);
+        if (response.data.default) {
+          setFormData((prev) => ({
+            ...prev,
+            test_suite: response.data.default,
+          }));
+        }
+      } catch (err) {
+        console.error("Failed to fetch test suites:", err);
+        setTestSuites(["test/unit", "test/integration", "test/e2e"]);
+      }
+    };
+    fetchTestSuites();
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -71,11 +95,10 @@ const PredictionForm = () => {
               </p>
             </div>
           </div>
-          
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="space-y-2">
               <label className="flex items-center space-x-2 text-sm font-semibold text-gray-700 mb-3">
                 <CalendarDays className="w-4 h-4 text-blue-600" />
@@ -88,6 +111,25 @@ const PredictionForm = () => {
                 onChange={handleInputChange}
                 className="w-full px-5 py-4 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-300 bg-white/80 backdrop-blur-sm text-gray-900 font-medium"
               />
+            </div>
+
+            <div className="space-y-2">
+              <label className="flex items-center space-x-2 text-sm font-semibold text-gray-700 mb-3">
+                <TestTube className="w-4 h-4 text-green-600" />
+                <span>Test Suite Type</span>
+              </label>
+              <select
+                name="test_suite"
+                value={formData.test_suite}
+                onChange={handleInputChange}
+                className="w-full px-5 py-4 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-green-500/20 focus:border-green-500 transition-all duration-300 bg-white/80 backdrop-blur-sm text-gray-900 font-medium"
+              >
+                {testSuites.map((suite) => (
+                  <option key={suite} value={suite}>
+                    {suite}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div className="flex items-center justify-center">
@@ -154,10 +196,16 @@ const PredictionForm = () => {
                   </span>
                 </div>
                 <p className="text-4xl font-bold text-green-700 mb-2">
-                  {prediction.prediction_minutes.toFixed(1)} min
+                  {prediction.prediction_minutes < 0.1
+                    ? `${prediction.prediction_seconds.toFixed(1)}s`
+                    : `${prediction.prediction_minutes.toFixed(1)} min`}
                 </p>
                 <p className="text-lg text-gray-600 font-medium">
-                  ({prediction.prediction_seconds.toFixed(0)} seconds)
+                  {prediction.prediction_minutes < 0.1
+                    ? `(${(prediction.prediction_minutes * 60).toFixed(
+                        1
+                      )} seconds)`
+                    : `(${prediction.prediction_seconds.toFixed(0)} seconds)`}
                 </p>
               </div>
 
@@ -182,7 +230,7 @@ const PredictionForm = () => {
                 <Brain className="w-5 h-5 mr-2 text-indigo-600" />
                 Analysis Parameters
               </h4>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div className="flex items-center space-x-3 p-3 bg-white/80 rounded-xl">
                   <GitBranch className="w-5 h-5 text-indigo-600" />
                   <div>
@@ -195,11 +243,22 @@ const PredictionForm = () => {
                   </div>
                 </div>
                 <div className="flex items-center space-x-3 p-3 bg-white/80 rounded-xl">
+                  <TestTube className="w-5 h-5 text-green-600" />
+                  <div>
+                    <span className="text-sm text-gray-500">Test Suite:</span>
+                    <span className="ml-2 font-bold text-gray-800">
+                      {prediction.input_features["Test Suite"]}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-3 p-3 bg-white/80 rounded-xl">
                   <Clock className="w-5 h-5 text-orange-600" />
                   <div>
                     <span className="text-sm text-gray-500">Time:</span>
                     <span className="ml-2 font-bold text-gray-800">
-                      {prediction.input_features["start_hour_of_day"]}:00
+                      {new Date(
+                        prediction.input_features.start_time || new Date()
+                      ).toLocaleTimeString()}
                     </span>
                   </div>
                 </div>
@@ -209,15 +268,9 @@ const PredictionForm = () => {
                     <span className="text-sm text-gray-500">Day:</span>
                     <span className="ml-2 font-bold text-gray-800">
                       {
-                        [
-                          "Monday",
-                          "Tuesday",
-                          "Wednesday",
-                          "Thursday",
-                          "Friday",
-                          "Saturday",
-                          "Sunday",
-                        ][prediction.input_features["start_day_of_week"]]
+                        ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][
+                          prediction.input_features.start_day_of_week
+                        ]
                       }
                     </span>
                   </div>
@@ -227,18 +280,15 @@ const PredictionForm = () => {
           </div>
         )}
 
-        {/* Enhanced Error Message */}
         {error && (
-          <div className="mt-8 p-6 bg-gradient-to-r from-red-50 to-pink-50 border-2 border-red-200 rounded-2xl shadow-lg">
+          <div className="mt-8 p-6 bg-red-50 border-2 border-red-200 rounded-2xl">
             <div className="flex items-center">
-              <div className="p-2 bg-red-500 rounded-xl mr-4">
-                <AlertCircle className="w-6 h-6 text-white" />
-              </div>
+              <AlertCircle className="w-6 h-6 text-red-600 mr-3" />
               <div>
-                <span className="text-red-800 font-bold text-lg">
-                  Prediction Failed
-                </span>
-                <p className="text-red-600 font-medium">{error}</p>
+                <h3 className="text-lg font-bold text-red-800">
+                  Prediction Error
+                </h3>
+                <p className="text-red-600">{error}</p>
               </div>
             </div>
           </div>

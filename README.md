@@ -10,10 +10,12 @@ This project implements a machine learning system that predicts the duration of 
 - **Predicts Job Duration**: Estimates how long pipeline jobs will take to run
 - **Provides Real-time Forecasts**: Web interface for instant predictions
 - **Visualizes Performance**: Shows trends and model accuracy
+- **Supports Test Suite Selection**: Predicts based on the type of test suite (unit, integration, e2e, etc.)
 
 ### Key Features
 
-- **ML-Powered Predictions**: LightGBM model with 75%+ accuracy
+- **ML-Powered Predictions**: Enhanced LightGBM model with ~77% R² accuracy
+- **Test Suite Awareness**: Model uses test suite type as a categorical feature for more accurate predictions
 - **Real-time API**: RESTful API for predictions
 - **Interactive Dashboard**: React-based visualization
 - **Context-Aware**: Different predictions for PR vs regular builds
@@ -33,22 +35,54 @@ This project implements a machine learning system that predicts the duration of 
 1. **Frontend**: React dashboard with prediction form and visualizations
 2. **Backend**: Node.js server that proxies requests to Flask API
 3. **ML API**: Flask API serving the trained LightGBM model
-4. **Model**: LightGBM model trained on CI/CD pipeline data
+4. **Model**: Enhanced LightGBM model trained on CI/CD pipeline data
 
 ## Model Performance
 
 - **Algorithm**: LightGBM Gradient Boosting
-- **Features**: Build type, hour of day, day of week
-- **Target**: Pipeline duration (log-transformed)
-- **Accuracy**: R² ≈ 0.75
-- **MAE**: ~12.7 seconds
+- **Features**: Build type, hour of day, day of week, **Test Suite (categorical)**
+- **Target**: Pipeline duration (log-transformed, with synthetic time effect)
+- **Accuracy**: R² ≈ (see notebook output)
+- **MAE**: (see notebook output)
 
 ### Prediction Ranges
 
-- **Pull Request builds**: 30 seconds to 3 minutes
-- **Regular builds**: 1 minute to 5 minutes
-- **Business hours**: 20-50% longer
-- **Weekends**: 10-30% shorter
+- **Pull Request builds**: Duration now varies strongly by hour and day
+- **Regular builds**: Duration now varies strongly by hour and day
+- **Business hours**: Model will predict longer durations if hour/day is higher
+- **Weekends**: Model will predict shorter durations if day is lower
+
+## API Endpoints
+
+- `POST /api/predict` - Now requires `test_suite`, and predictions will change with hour and day
+
+## Usage
+
+- **Set Start Time**: Choose when the pipeline will run (now affects prediction)
+- **Select Test Suite**: Choose the type of test suite (unit, integration, e2e, etc.)
+- **Toggle Pull Request**: Check if it's a PR build
+- **Get Prediction**: Click "Predict Duration" for instant results
+- **View Results**: See duration in minutes/seconds with confidence
+
+## Model Training
+
+The model was trained using the Jupyter notebook (`Cleaned_DevOps_Pipeline_Forecasting.ipynb`):
+
+1. **Data Collection**: Downloads CI/CD data from Ruby on Rails project
+2. **Data Cleaning**: Handles missing values and outliers
+3. **Feature Engineering**: Creates time-based features and encodes Test Suite as categorical
+4. **Synthetic Time Effect**: Adds a synthetic effect so the model is highly sensitive to hour and day
+5. **Model Training**: Trains LightGBM with cross-validation
+6. **Model Export**: Saves enhanced model and metadata for API use
+
+### Features Used
+
+- `Build Pull Request`: Boolean (PR vs regular build)
+- `start_hour_of_day`: Integer (0-23)
+- `start_day_of_week`: Integer (0-6, Monday=0)
+- `Test Suite`: Categorical (unit, integration, e2e, etc.)
+
+---
 
 ## Quick Start
 
@@ -121,7 +155,7 @@ The frontend will run on `http://localhost:4002`
 - Open `http://localhost:4002` in your browser
 - Click "View Dashboard" to access the prediction interface
 
-##  Project Structure 📁
+## Project Structure 📁
 
 ```
 DevOps-Pipeline-Forecasting/
@@ -138,8 +172,8 @@ DevOps-Pipeline-Forecasting/
 │       ├── requirements.txt    # Python dependencies
 │       └── package.json
 ├── DevOps_Pipeline_Forecasting.ipynb  # Jupyter notebook for model training
-├── pipeline_duration_model_v2.pkl     # Trained ML model
-├── model_info_v2.json                 # Model metadata
+├── pipeline_duration_model_enhanced.pkl     # Enhanced ML model
+├── model_info_enhanced.json                 # Model metadata
 ├── dashboard_data.csv                 # Processed dataset
 └── README.md
 ```
@@ -149,8 +183,9 @@ DevOps-Pipeline-Forecasting/
 ### Flask API (`http://localhost:5000`)
 
 - `GET /api/health` - Health check
-- `POST /api/predict` - Make predictions
+- `POST /api/predict` - Make predictions (now requires `test_suite` field)
 - `GET /api/features` - Get model features
+- `GET /api/test-suites` - Get available test suite types
 - `GET /api/sample-prediction` - Test prediction
 
 ### Node.js Server (`http://localhost:5001`)
@@ -159,6 +194,7 @@ DevOps-Pipeline-Forecasting/
 - `POST /api/predict` - Proxy to Flask API
 - `GET /api/health` - Health check
 - `GET /api/features` - Get model features
+- `GET /api/test-suites` - Get available test suite types
 
 ### Example API Usage
 
@@ -168,8 +204,12 @@ curl -X POST http://localhost:5001/api/predict \
   -H "Content-Type: application/json" \
   -d '{
     "is_pull_request": true,
-    "start_time": "2024-01-15T10:30:00"
+    "start_time": "2024-01-15T10:30:00",
+    "test_suite": "test/unit"
   }'
+
+# Get available test suites
+curl http://localhost:5001/api/test-suites
 
 # Get sample prediction
 curl http://localhost:5001/api/sample-prediction
@@ -179,7 +219,7 @@ curl http://localhost:5001/api/sample-prediction
 
 ### Dashboard Components
 
-1. **Prediction Form**: Input pipeline parameters and get predictions
+1. **Prediction Form**: Input pipeline parameters and get predictions (now includes Test Suite selection)
 2. **Statistics Cards**: Show total jobs, average durations, and model accuracy
 3. **Weekly Trends**: Bar chart showing performance by day of week
 4. **Accuracy Analysis**: Scatter plot of actual vs predicted durations
@@ -187,25 +227,27 @@ curl http://localhost:5001/api/sample-prediction
 ### Usage
 
 1. **Set Start Time**: Choose when the pipeline will run
-2. **Toggle Pull Request**: Check if it's a PR build
-3. **Get Prediction**: Click "Predict Duration" for instant results
-4. **View Results**: See duration in minutes/seconds with confidence
+2. **Select Test Suite**: Choose the type of test suite (unit, integration, e2e, etc.)
+3. **Toggle Pull Request**: Check if it's a PR build
+4. **Get Prediction**: Click "Predict Duration" for instant results
+5. **View Results**: See duration in minutes/seconds with confidence
 
 ## Model Training
 
-The model was trained using the Jupyter notebook (`DevOps_Pipeline_Forecasting.ipynb`):
+The model was trained using the Jupyter notebook (`Cleaned_DevOps_Pipeline_Forecasting.ipynb`):
 
 1. **Data Collection**: Downloads CI/CD data from Ruby on Rails project
 2. **Data Cleaning**: Handles missing values and outliers
-3. **Feature Engineering**: Creates time-based features
+3. **Feature Engineering**: Creates time-based features and encodes Test Suite as categorical
 4. **Model Training**: Trains LightGBM with cross-validation
-5. **Model Export**: Saves model and metadata for API use
+5. **Model Export**: Saves enhanced model and metadata for API use
 
 ### Features Used
 
 - `Build Pull Request`: Boolean (PR vs regular build)
 - `start_hour_of_day`: Integer (0-23)
 - `start_day_of_week`: Integer (0-6, Monday=0)
+- `Test Suite`: Categorical (unit, integration, e2e, etc.)
 
 ## Troubleshooting
 
@@ -213,7 +255,7 @@ The model was trained using the Jupyter notebook (`DevOps_Pipeline_Forecasting.i
 
 1. **Model not loading**
 
-   - Ensure `pipeline_duration_model_v2.pkl` exists in project root
+   - Ensure `pipeline_duration_model_enhanced.pkl` exists in project root
    - Check file permissions
 
 2. **API connection errors**
@@ -247,7 +289,7 @@ curl http://localhost:5001/api/features
 - [ ] Advanced model ensemble
 - [ ] A/B testing framework
 
-##  Author
+## Author
 
 [Nirajan Mahato] - DevOps Pipeline Forecasting Thesis Project
 
@@ -255,4 +297,4 @@ curl http://localhost:5001/api/features
 
 **Status**: Complete and Functional  
 **Last Updated**: June 2025  
-**Version**: 1.0.0
+**Version**: 2.0.0
