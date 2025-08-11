@@ -1,6 +1,6 @@
 import axios from "axios";
 import { AlertCircle, CheckCircle, Clock } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   Brain,
@@ -15,7 +15,7 @@ import {
 const PredictionForm = () => {
   const [formData, setFormData] = useState({
     is_pull_request: false,
-    start_time: new Date().toISOString().slice(0, 16),
+      start_time: new Date().toISOString().slice(0, 16),
     test_suite: "test/unit",
   });
 
@@ -71,6 +71,7 @@ const PredictionForm = () => {
       setLoading(false);
     }
   };
+  const minDateTime = new Date().toISOString().slice(0, 16);
 
   return (
     <div className="relative overflow-hidden bg-white/90 backdrop-blur-lg rounded-3xl border border-white/50 p-8 shadow-lg">
@@ -109,6 +110,7 @@ const PredictionForm = () => {
                 name="start_time"
                 value={formData.start_time}
                 onChange={handleInputChange}
+                min={minDateTime}
                 className="w-full px-5 py-4 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-300 bg-white/80 backdrop-blur-sm text-gray-900 font-medium"
               />
             </div>

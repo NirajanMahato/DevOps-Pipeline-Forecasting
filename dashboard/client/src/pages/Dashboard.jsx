@@ -1,14 +1,6 @@
 import axios from "axios";
-import {
-  ArrowLeft,
-  Calendar,
-  Database,
-  Target,
-  Timer,
-  TrendingUp,
-  Zap,
-} from "lucide-react";
-import React, { useEffect, useMemo, useState } from "react";
+import { ArrowLeft, Calendar, TrendingUp } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Bar,
@@ -116,13 +108,7 @@ const Dashboard = () => {
     [data]
   );
 
-  const StatCard = ({
-    title,
-    value,
-    subtitle,
-    color = "blue",
-    trend,
-  }) => (
+  const StatCard = ({ title, value, subtitle, color = "blue", trend }) => (
     <div className="group bg-white/70 backdrop-blur-sm rounded-2xl border border-white/50 p-6 hover:bg-white/90 hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 hover:border-blue-200/50">
       <div className="flex items-center justify-between">
         <div className="flex-1">
@@ -155,7 +141,7 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
-      {/* Modern Header */} 
+      {/* Modern Header */}
       <header className="bg-white/80 backdrop-blur-lg shadow-lg border-b border-white/20 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
@@ -186,7 +172,7 @@ const Dashboard = () => {
         </div>
 
         {/* Enhanced Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+        {/* <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
           <StatCard
             title="Pipeline Jobs"
             value={summaryStats.totalJobs.toLocaleString()}
@@ -215,7 +201,7 @@ const Dashboard = () => {
             color="orange"
             trend={{ type: "up", value: "+8%" }}
           />
-        </div>
+        </div> */}
 
         {/* Analytics Charts Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
